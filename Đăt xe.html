@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Đặt xe</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: Arial, sans-serif; }
+
+   header {
+      background: #cceeff;
+      padding: 10px 20px;
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+    }
+
+    header img {
+      height: 40px;
+    } 
+
+
+    nav {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      position: relative;
+    }
+
+    nav a {
+      text-decoration: none;
+      color: black;
+      font-weight: bold;
+      padding: 8px 12px;
+      font-size: 17px;
+      display: inline-block;
+      transition: background 0.3s, transform 0.2s;
+    }
+
+    nav a.active {
+      background: #cceeff;
+      border-radius: 4px;
+      transform: scale(0.95);
+    }
+
+    nav a:hover {
+      background: #ffe066;
+      border-radius: 4px;
+      transform: scale(1.05);
+    }
+
+   
+
+    .user-icon {
+      cursor: pointer;
+      font-size: 24px;
+    }
+
+    .account-panel {
+  display: none; /* Mặc định ẩn */
+  position: absolute;
+  top: 60px;
+  right: 40px;
+  width: 300px;
+  background: #cceeff;
+  border: 1px solid #999;
+  border-radius: 10px;
+  padding: 20px;
+  z-index: 999;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+}
+
+    .form-box input, .form-box textarea, .form-box button {
+      width: 100%;
+      margin-bottom: 10px;
+      padding: 10px;
+    }
+
+    .btn-submit {
+      background-color: #ff5e5e;
+      border: none;
+      padding: 8px;
+      width: 100%;
+      color: white;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background 0.3s, transform 0.2s;
+    }
+
+    .btn-submit:hover {
+      background-color: #e14c4c;
+      transform: scale(1.02);
+    }
+
+    .success-msg {
+      color: green;
+      margin-top: 10px;
+      display: none;
+      text-align: center;
+      font-weight: bold;
+    }
+
+    .banner {
+      position: relative;
+      height: 220px;
+      background-image: url('https://th.bing.com/th/id/OIP.wdbT6M2mBkQTu3dH7psDjgHaDs?rs=1&pid=ImgDetMain');
+      background-size: cover;
+      background-position: center;
+      text-align: center;
+    }
+
+    .banner h1 {
+      color: white;
+      font-size: 40px;
+      position: absolute;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      text-shadow: 2px 2px 4px #000;
+    }
+
+    .form-box {
+      background: white;
+      padding: 20px;
+      border: 1px solid #ccc;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      border-radius: 8px;
+    }
+
+    .banner .form-box {
+      position: absolute;
+      top: 80px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 300px;
+    }
+
+    .vehicle-section {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+      padding: 40px 20px;
+      background: #e0f7ff;
+    }
+
+    .vehicle {
+      background: #aee0ff;
+      padding: 15px;
+      border-radius: 10px;
+      text-align: center;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      transition: transform 0.2s;
+    }
+
+    .vehicle:hover {
+      transform: translateY(-5px);
+    }
+
+    .vehicle img {
+      width: 100%;
+      height: 160px;
+      object-fit: cover;
+      border-radius: 6px;
+      margin-bottom: 10px;
+    }
+
+    .vehicle button {
+      background: #f75e5e;
+      color: white;
+      border: none;
+      padding: 10px 0;
+      width: 100%;
+      font-size: 15px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .vehicle button:hover {
+      background: #d94c4c;
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 999;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background-color: rgba(0, 0, 0, 0.6);
+      justify-content: center;
+      align-items: center;
+    }
+
+    .modal-content {
+      background: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      width: 320px;
+      text-align: center;
+    }
+
+    .modal-content input {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+    }
+
+    .modal-content button {
+      background: #4caf50;
+      color: white;
+      border: none;
+      padding: 10px 16px;
+      font-size: 15px;
+      cursor: pointer;
+      border-radius: 6px;
+      transition: 0.3s;
+    }
+
+    .modal-content button:hover {
+      background: #43a047;
+    }
+
+    .success {
+      margin-top: 10px;
+      color: green;
+    }
+
+   
+    .lienhe {
+        background: linear-gradient(to right, #c8f3fe, rgb(87, 160, 202));
+        background-color: #89e2f8;
+
+        padding: 40px;
+      }
+
+      .lienhe h2 {
+        font-size: 20px;
+        margin-bottom: 20px;
+        padding-left: 30px;
+      }
+
+      .lienhe p {
+        font-size: 16px;
+        margin: 10px 0;
+      }
+
+      .lienhe img {
+        height: 40px;
+        margin-top: 20px;
+      }
+      #div_lienhe {
+        padding-left: 20vw;
+        display: flex;
+      }
+      #div_img {
+        margin-top: 0px;
+        margin-right: 100px;
+      }
+      #div_img img {
+        width: 100px;
+        height: 100px;
+        border-radius: 50px;
+      }
+
+      #div_lh li,
+      h2 {
+        color: #333;
+      }
+      .tieude {
+        display: flex;
+        align-items: center;
+        padding: 10px 50px;
+        background-color: #89e2f8;
+      }
+
+      .logo {
+        height: 50px;
+        width: 50px;
+        border-radius: 25px;
+      } .dieuhuong a {
+        margin-left: 20px;
+        padding-left: 20px;
+        text-decoration: none;
+        color: #333;
+        font-size: 16px;
+      }
+
+      .ngonngu {
+        display: flex;
+        align-items: center;
+      }#dangnhap,
+      #dangky,
+      #dangxuat {
+        padding-top: 2px;
+        padding-left: 20px;
+        background-color: #fff;
+        margin-right: 20px;
+        margin-left: 20px;
+        width: 120px;
+        height: 30px;
+        border-radius: 20px;
+      }
+     
+      .ngonngu input {
+        border: none;
+        background-color: #fff;
+        margin-right: 20px;
+        width: 190px;
+        height: 30px;
+        border-radius: 20px;
+      }
+
+      .ngonngu a {
+        text-decoration: none;
+        color: #333;
+        font-size: 16px;
+        margin-right: 15px;
+      }
+
+      .ngonngu select {
+        border: 1px solid #ccc;
+        padding: 5px;
+        border-radius: 5px;
+        background: transparent;
+        font-size: 16px;
+      }
+  </style>
+</head>
+<body>
+
+  <header class="tieude">
+    <div>
+      <img
+        style="margin-left: 15px"
+        class="logo"
+        src="./z6565887036075_614e717af1372494d4e01f5b6a130d35.jpg"
+        alt="Logo"
+      /><br />
+      <p style="font-size: x-small">DaNangTravel12</p>
+    </div>
+    <nav class="dieuhuong">
+      <a href="#">Trang chủ</a>
+      <a href="#">Ẩm thực</a>
+      <a href="#">Điểm đến</a>
+      <a href="#">Dịch vụ</a>
+      <a href="#">Đặt phòng</a>
+     
+    </nav>
+    <div class="ngonngu">
+      <input type="text" placeholder="Tìm Kiếm" />
+      <div id="dangky"><a href="./dangky.html">Đăng ký</a></div>
+      <div id="dangnhap"><a href="./dangnhap.html">Đăng nhập</a></div>
+    </div>
+
+  <span class="user-icon" title="Tài khoản người dùng">👤</span>
+  <div class="account-panel" id="accountPanel">
+    <h3>Quản Lý Tài Khoản</h3>
+    <div class="form-box">
+      <input type="text" placeholder="Tên đăng nhập" id="username" required>
+      <input type="email" placeholder="Gmail" id="gmail" required>
+    </div>
+    <div class="form-box">
+      <h4>Lịch sử đặt</h4>
+      <input type="text" placeholder="Tour du lịch" id="tour">
+      <input type="text" placeholder="Đặt xe" id="car">
+      <h4>Đánh giá của bạn</h4>
+      <textarea placeholder="Hãy chia sẻ trải nghiệm của bạn..." id="review" required></textarea>
+      <button class="btn-submit" onclick="submitReview()">Gửi đánh giá</button>
+      <p class="success-msg" id="successMsg">🎉 Đã gửi đánh giá thành công!</p>
+    </div>
+  </div>
+  
+</header>
+
+<div class="banner">
+  <h1>Đặt xe</h1>
+  <div class="form-box">
+    <input type="text" placeholder="Điểm đón">
+    <input type="date">
+    <button>Tìm xe</button>
+  </div>
+</div>
+
+<div class="vehicle-section">
+  <div class="vehicle">
+    <h4>Xe cá nhân / Gia đình nhỏ</h4>
+    <img src="https://danchoioto.vn/wp-content/uploads/2021/08/xe-o-to-nho.jpeg" alt="4 chỗ">
+    <p>Toyota Vios / Hyundai Accent<br>500.000đ - 700.000đ</p>
+    <button onclick="openModal()">Đặt xe</button>
+  </div>
+  <div class="vehicle">
+    <h4>Xe nhóm / Gia đình đông người</h4>
+    <img src="https://danchoioto.vn/wp-content/uploads/2021/08/toyota-innova-la-mot-mau-7-cho-binh-dan-dang-tien-phu-hop-voi-cac-gia-dinh-dong-thanh-vien-768x524.jpg" alt="7 chỗ">
+    <p>Innova / Fortuner / Xpander<br>900.000đ - 1.200.000đ</p>
+    <button onclick="openModal()">Đặt xe</button>
+  </div>
+  <div class="vehicle">
+    <h4>Xe du lịch cỡ lớn</h4>
+    <img src="https://th.bing.com/th/id/R.079fd63562a1ce564904dd3d99082e70?rik=Nq%2fnVjDwvPXGTA&pid=ImgRaw&r=0" alt="29 chỗ">
+    <p>Xe 29 chỗ<br>2.000.000đ – 2.500.000đ</p>
+    <button onclick="openModal()">Đặt xe</button>
+  </div>
+  <div class="vehicle">
+    <h4>Xe máy (du lịch bụi)</h4>
+    <img src="https://th.bing.com/th/id/OIP.pXiJbQax1-lNOJnpKCOtLQHaFi?rs=1&pid=ImgDetMain" alt="Xe máy">
+    <p>Air Blade, Vision...<br>150.000đ – 180.000đ</p>
+    <button onclick="openModal()">Đặt xe</button>
+  </div>
+</div>
+
+<div class="modal" id="modal">
+  <div class="modal-content">
+    <h3>Nhập thông tin đặt xe</h3>
+    <input type="text" id="name" placeholder="Họ tên">
+    <input type="date" id="date">
+    <button onclick="confirmBooking()">Xác nhận</button>
+    <div class="success" id="success"></div>
+  </div>
+</div>
+
+<footer>
+  <div class="footer-info">
+   <!-- Contact Section -->
+  <section class="lienhe">
+    <div id="div_lienhe">
+      <div id="div_img">
+        <img
+          src="./z6565887036075_614e717af1372494d4e01f5b6a130d35.jpg"
+          alt="Logo Footer"
+        />
+        <p style="color: #333">DaNangTravel12</p>
+      </div>
+      <div id="div_lh">
+        <h2>LIÊN HỆ</h2>
+        <ul>
+          <li>Địa chỉ: Số 128, đường Nguyễn Trãi, Đà Nẵng.</li>
+          <li>Hotline: 19001001910</li>
+          <li>SĐT: 0375.124.568</li>
+          <li>Email: DaNangTravel12@gmailgmail.com</li>
+          <li>Website: https://DaNangTravel12/</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+</footer>
+
+<script>
+  function toggleDropdown(event) {
+    event.stopPropagation();
+    const dropdown = document.getElementById('bookingDropdown');
+    dropdown.style.display = (dropdown.style.display === 'block') ? 'none' : 'block';
+  }
+
+  function openModal() {
+    const modal = document.getElementById('modal');
+    modal.style.display = 'flex';
+    document.getElementById('success').innerText = '';
+  }
+
+  function confirmBooking() {
+    const name = document.getElementById('name').value;
+    const date = document.getElementById('date').value;
+    const msg = document.getElementById('success');
+    if (name && date) {
+      msg.innerText = "✅ Đặt xe thành công!";
+      msg.style.color = "green";
+    } else {
+      msg.innerText = "❌ Vui lòng nhập đủ thông tin!";
+      msg.style.color = "red";
+    }
+  }
+
+  function submitReview() {
+    const username = document.getElementById('username').value.trim();
+    const gmail = document.getElementById('gmail').value.trim();
+    const review = document.getElementById('review').value.trim();
+
+    if (username && gmail && review) {
+      const successMsg = document.getElementById('successMsg');
+      successMsg.style.display = 'block';
+      successMsg.style.opacity = 0;
+      setTimeout(() => {
+        successMsg.style.opacity = 1;
+        successMsg.style.transition = 'opacity 0.5s ease-in';
+      }, 100);
+
+      document.querySelector('.btn-submit').disabled = true;
+      setTimeout(() => {
+        document.querySelector('.btn-submit').disabled = false;
+      }, 3000);
+    } else {
+      alert('Vui lòng điền đầy đủ Tên, Gmail và Đánh giá.');
+    }
+  }
+
+  window.addEventListener('click', function () {
+  document.getElementById('bookingDropdown').style.display = 'none';
+  document.getElementById('accountPanel').style.display = 'none';
+});
+
+document.querySelector('.user-icon').addEventListener('click', function (e) {
+  e.stopPropagation();
+  const panel = document.getElementById('accountPanel');
+  panel.style.display = (panel.style.display === 'block') ? 'none' : 'block';
+});
+
+document.getElementById('accountPanel').addEventListener('click', function (e) {
+  e.stopPropagation();  // Ngăn click vào bảng bị ẩn đi
+});
+
+
+    // Ngăn click bên trong modal đóng nó
+    if (modalContent) {
+      modalContent.addEventListener('click', function (e) {
+        e.stopPropagation();
+      });
+    }
+
+    // Click ra ngoài modal thì đóng
+    if (modal) {
+      modal.addEventListener('click', function (e) {
+        modal.style.display = 'none';
+      });
+    }
+  
+</script>
+
+
+
+</body>
+</html>
